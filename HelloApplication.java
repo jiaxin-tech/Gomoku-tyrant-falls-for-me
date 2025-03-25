@@ -15,8 +15,7 @@ import java.io.IOException;
 
 public class HelloApplication extends Application {
     private static final int Size=20;
-    private static final int cellSize=30;
-    private static final int tolerance=10;
+    private static final int cellSize=35;
 
 
     private int [][]  board=new int[Size][Size];
@@ -32,7 +31,7 @@ public class HelloApplication extends Application {
         gc = canvas.getGraphicsContext2D();
         drawboard();
 
-        HBox hbox = new HBox(10);
+        HBox hbox = new HBox(12);
         Button startButton = new Button("New Game");
         startButton.setOnAction(event -> {
             board = new int[Size][Size];
@@ -43,6 +42,13 @@ public class HelloApplication extends Application {
         });
         label = new Label("Current Player: Black");
         hbox.getChildren().addAll(startButton, label);
+
+        canvas.setOnMouseClicked(event -> {
+           if(!gameover) {
+               handleClick(event.getX(),event.getY());
+           }
+
+        });
 
 
 
@@ -55,6 +61,38 @@ public class HelloApplication extends Application {
         stage.show();
     }
 
+    private void handleClick(double x, double y) {
+        int clickedX = (int)Math.round(x/cellSize);
+        int clickedY = (int)Math.round(y/cellSize);
+        if(board[clickedX][clickedY]==0) {
+            board[clickedX][clickedY]=blackturn ? 1 : 2;
+            drawStone(clickedX,clickedY,blackturn? Color.BLACK : Color.WHITE);
+
+            if(checkwin(clickedX,clickedY)) {
+                gameover = true;
+                label.setText("Game Over"+" "+(blackturn? "Black" : "White")+" "+"win!");
+            }else {
+                label.setText("Current Player:"+(blackturn? "Black" : "White"));
+            }
+
+        }
+    }
+
+    private boolean checkwin(int clickedX, int clickedY) {
+        int current=board[clickedX][clickedY];
+        if(chekedirection(clickedX,clickedY,current,0,1)||
+                chekedirection(clickedX,clickedY,current,1,0)||
+                chekedirection(clickedX,clickedY,current,1,1)||
+                chekedirection(clickedX,clickedY,current,-1,1)){
+            return true;
+        }
+        return false;
+    }
+
+    private boolean chekedirection(int clickedX, int clickedY, int current, int i, int i1) {
+        
+    }
+
     private void drawboard() {
         gc.setFill(Color.BURLYWOOD);
         gc.fillRect(0,0,Size*cellSize,Size*cellSize);
@@ -63,7 +101,7 @@ public class HelloApplication extends Application {
             gc.strokeLine(i*cellSize, 0, i*cellSize, Size*cellSize);
             gc.strokeLine(0, i*cellSize, Size*cellSize, i*cellSize);
         }
-        //board[1][1]=1;
+
         for (int i = 0; i < Size; i++) {
             for (int j = 0; j < Size; j++) {
                 if (board[i][j] == 1) {
@@ -77,7 +115,7 @@ public class HelloApplication extends Application {
 
     private void drawStone(int i, int j, Color color) {
         gc.setFill(color);
-        gc.fillOval(i*cellSize-15,j*cellSize-15,cellSize,cellSize);
+        gc.fillOval(i*cellSize- (double) cellSize /2,j*cellSize- (double) cellSize /2,cellSize,cellSize);
     }
 
     public static void main(String[] args) {
