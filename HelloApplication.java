@@ -49,10 +49,6 @@ public class HelloApplication extends Application {
            }
 
         });
-
-
-
-
         root.setCenter(canvas);
         root.setBottom(hbox);
 
@@ -72,6 +68,7 @@ public class HelloApplication extends Application {
                 gameover = true;
                 label.setText("Game Over"+" "+(blackturn? "Black" : "White")+" "+"win!");
             }else {
+                blackturn=!blackturn;
                 label.setText("Current Player:"+(blackturn? "Black" : "White"));
             }
 
@@ -80,17 +77,33 @@ public class HelloApplication extends Application {
 
     private boolean checkwin(int clickedX, int clickedY) {
         int current=board[clickedX][clickedY];
-        if(chekedirection(clickedX,clickedY,current,0,1)||
-                chekedirection(clickedX,clickedY,current,1,0)||
-                chekedirection(clickedX,clickedY,current,1,1)||
-                chekedirection(clickedX,clickedY,current,-1,1)){
-            return true;
-        }
-        return false;
+        return chekedirection(clickedX, clickedY, current, 0, 1) ||
+                chekedirection(clickedX, clickedY, current, 1, 0) ||
+                chekedirection(clickedX, clickedY, current, 1, 1) ||
+                chekedirection(clickedX, clickedY, current, -1, 1);
     }
 
     private boolean chekedirection(int clickedX, int clickedY, int current, int i, int i1) {
-        
+        int count=1;
+                for(int c=1;c<5;c++){
+                int x=clickedX+i*c;
+                int y=clickedY+i1*c;
+                if(x>20||x<0||y>20||y<0||board[x][y]!=current) {
+                    break;
+                }else {
+                    count=count+1;
+                }
+                }
+        for(int c=1;c<5;c++){
+            int x=clickedX-i*c;
+            int y=clickedY-i1*c;
+            if(x>20||x<0||y>20||y<0||board[x][y]!=current) {
+                break;
+            }else {
+                count=count+1;
+            }
+        }
+        return count == 5;
     }
 
     private void drawboard() {
